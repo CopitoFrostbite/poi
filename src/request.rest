@@ -1,0 +1,27 @@
+
+###
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+    "nombre":"abolfo",
+    "correo":"correo@hotmail.com"
+}
+
+###
+GET  http://localhost:3000/api/user
+
+###
+GET  http://localhost:3000/api/user/641b8dc06f4a1fca0627f077
+
+###
+PUT http://localhost:3000/api/user/641b8dc06f4a1fca0627f077
+Content-Type: application/json
+
+{
+    "nombre":"abolfoo",
+    "correo":"correo@hotmail.com"
+}
+
+###
+DELETE   http://localhost:3000/api/user/641ba24ecbb0078646730ff1
