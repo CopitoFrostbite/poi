@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+           <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"-->
+           <link rel="stylesheet"  href="CSS/Centrado.css">
+           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <title>Inicio</title>
+    </head>
+    <body>
+        <div class="cuadro" style="width: 700px;">
+            <h1 class="glow" style="text-align: center; font-size: 37px;">Mi perfil</h1>
+            <div class="fila">
+                <div class="columna" style="font-size: 20px">
+                    <p style="margin-bottom: 13px">Nombre de usuario: 
+                        <small id="NombreUsuario" class="glow">
+                            el.ferras.original.20
+                        </small>
+                    </p>
+                    <p style="margin-bottom: 13px">Correo: 
+                        <small id="CorreoElect" class="glow">
+                            elferras@hotmail.com
+                        </small>
+                    </p>
+                    <p style="margin-bottom: 13px">Contraseña: 
+                        <small id="ContraUsuario" class="glow">
+                            ah0ra-labebez.o-la_d3rr4m4z
+                        </small>
+                    </p>
+                </div>
+            </div>
+            <div class="fila">
+                <div class="columna" style="margin-left: 1rem; margin-right: 1rem;">
+                    <div class="espacio">
+                        <input type="submit" name="editardatos" value="Editar datos"/>
+                    </div>
+                </div>
+                <div class="columna" style="margin-left: 1rem; margin-right: 1rem;">
+                    <form id="logoffForm">
+                        <div class="espacio">
+                            <input type="submit" name="logout" value="Salir de la Cuenta"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="fila">
+                <div class="columna" style="margin-left: 1rem; margin-right: 1rem;">
+                    <form action="PublicacionesListado.html" method="post">
+                        <div class="espacio">
+                            <input type="submit" name="estados" value="Historial de Mensajes"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="columna" style="margin-left: 1rem; margin-right: 1rem;">
+                    <form action="dashboard.html" method="post">
+                        <div class="espacio">
+                            <input type="submit" name="dashboard" value="Crear Sesión"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--script src="https://code.jquery.com/jquery-3.6.0.min.js"></script-->
+        <script src="js/jquery-3.6.0.js"></script>
+        <script src="js/inicio.js"></script>
+        <script src="js/login.js"></script>
+    </body>
+</html>

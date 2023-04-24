@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+           <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"-->
+           <link rel="stylesheet"  href="CSS/Centrado.css">
+           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <title>Login</title>
+          
+</head>
+    <body>
+        <div class="cuadro">
+            <h1 class="glow" style="text-align: center; font-size: 37px;">Iniciar Sesión</h1>
+            <form id="loginForm">
+                <div class="espacio">
+                    <input type="text" id="inputName" name="nombre" placeholder="Nombre de usuario" required autofocus>
+                </div>
+                <div class="espacio">
+                    <input type="password" id="inputPassword" name="contrasenia" placeholder="Contraseña" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="La contraseña debe contener como mínimo 8 carácteres, una minúscula, una mayúscula, y un número." required> 
+                </div>
+
+              <!--div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1">Recordar contraseña</label>
+              </div-->
+                <div class="espacio">
+                    <input type="submit" name="login" value="Iniciar sesión">
+                </div>
+              <!--button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Iniciar sesión </button-->
+                  
+                <div class="espacio">
+                    <!--input type="submit" name="registro" onclick="registrarUsuario.html" value="¿No tiene cuenta? Registre aquí"-->
+                    <a href="registrarUsuario.html">¿No tiene cuenta?</a>
+                </div>
+            </form>
+        </div>
+        <!--script src="https://code.jquery.com/jquery-3.6.0.min.js"></script-->
+        <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="/login.js"></script>
+    </body>
+</html>

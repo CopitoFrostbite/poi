@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+           <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"-->
+           <link rel="stylesheet"  href="CSS/Centrado.css">
+           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <title>Registrar</title>
+           
+</head>
+    <body>
+        <div class="cuadro">
+            <h1 class="glow" style="text-align: center; font-size: 37px;">Registro de cuenta</h1>
+            <form id="registrarForm" >
+                <div class="espacio">
+                    <input type="email" id="inputEmail" name="correo" placeholder="Email" required autofocus>
+                </div>
+				<div class="espacio">
+                    <input type="text" id="inputName" name="nombre" placeholder="Nombre de Usuario" required autofocus>
+                </div>
+                <div class="espacio">
+                    <input type="password" id="inputPassword" name="contrasenia" placeholder="Contraseña" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="La contraseña debe contener como mínimo 8 carácteres, una minúscula, una mayúscula, y un número." required> 
+                </div>
+
+                <br><br>
+                <input name="accion" type="hidden" value="registrar"/>
+                <div class="espacio">
+                    <input type="submit" name="registro" value="Crear Usuario"/>
+                </div>
+                <a href="login.html">¿Ya tiene una cuenta?</a>
+          </form>
+        </div>
+        <!--script src="https://code.jquery.com/jquery-3.6.0.min.js"></script-->
+        <script src="js/jquery-3.6.0.js"></script>
+        <script src="js/login.js"></script>
+    </body>
+</html>

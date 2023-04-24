@@ -1,21 +1,48 @@
 
 ###
-POST http://localhost:3000/api/user
+POST http://localhost:3001/api/user
 Content-Type: application/json
 
 {
-    "nombre":"abolfo",
+    "username":"abolfo",
     "correo":"correo@hotmail.com"
+    
 }
 
 ###
-GET  http://localhost:3000/api/user
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+   "username": "abolfo",
+    "nombre": "Abolfo2",
+    "correo": "correo@hotmail.com",
+    "password": "abolfo12345",
+    "profilePicture": "",
+    "coverPicture": "",
+    "desc": "",
+    "city": "",
+    "from": ""
+}
+//login
+###
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+   
+   "username": "abolfo",
+    "password": "abolfo12345"
+}
 
 ###
-GET  http://localhost:3000/api/user/641b8dc06f4a1fca0627f077
+GET  http://localhost:3001/api/user
 
 ###
-PUT http://localhost:3000/api/user/641b8dc06f4a1fca0627f077
+GET  http://localhost:3001/api/user/641b8dc06f4a1fca0627f077
+
+###
+PUT http://localhost:3001/api/user/641b8dc06f4a1fca0627f077
 Content-Type: application/json
 
 {
@@ -24,4 +51,36 @@ Content-Type: application/json
 }
 
 ###
-DELETE   http://localhost:3000/api/user/641ba24ecbb0078646730ff1
+DELETE   http://localhost:3001/api/user/641ba24ecbb0078646730ff1
+
+
+//conversaciones
+
+###
+POST http://localhost:3001/api/conversations
+Content-Type: application/json
+
+{
+    "senderId":"641b8dc06f4a1fca0627f077",
+    "receiverId":"641bcc4e9f0d515c5f304284"
+}
+
+###
+GET http://localhost:3001/api/conversations/641b8dc06f4a1fca0627f077
+
+//mensajes
+
+###
+POST http://localhost:3001/api/messages
+Content-Type: application/json
+
+{
+    "conversationId":"644201a4769700cedf364908",
+    "sender":"641bcc4e9f0d515c5f304284",
+    "text":"en el baño"
+}
+###
+GET http://localhost:3001/api/messages/644201a4769700cedf364908
+
+
+
