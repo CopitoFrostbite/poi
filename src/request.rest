@@ -24,6 +24,34 @@ Content-Type: application/json
     "city": "",
     "from": ""
 }
+
+###
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+   "username": "osita",
+    "nombre": "Abolfo2",
+    "correo": "correoe@hotmail.com",
+    "password": "osita12345",
+    "profilePicture": "",
+    "coverPicture": "",
+    "desc": "",
+    "city": "",
+    "from": ""
+}
+
+
+###
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+   "username": "sally",
+    "nombre": "sally",
+    "correo": "correoa@hotmail.com",
+    "password": "sally12345"
+}
 //login
 ###
 POST http://localhost:3001/api/auth/login
@@ -39,7 +67,9 @@ Content-Type: application/json
 GET  http://localhost:3001/api/user
 
 ###
-GET  http://localhost:3001/api/user/641b8dc06f4a1fca0627f077
+GET  http://localhost:3001/api/user/644705ba9ebd4916bd877c9a
+
+
 
 ###
 PUT http://localhost:3001/api/user/641b8dc06f4a1fca0627f077
@@ -61,12 +91,12 @@ POST http://localhost:3001/api/conversations
 Content-Type: application/json
 
 {
-    "senderId":"641b8dc06f4a1fca0627f077",
-    "receiverId":"641bcc4e9f0d515c5f304284"
+    "senderId":"64477799181bf2845a2f6448",
+    "receiverId":"6445b1c1d42fc9cebeae9259"
 }
 
 ###
-GET http://localhost:3001/api/conversations/641b8dc06f4a1fca0627f077
+GET http://localhost:3001/api/conversations/64477799181bf2845a2f6448
 
 //mensajes
 
@@ -75,12 +105,12 @@ POST http://localhost:3001/api/messages
 Content-Type: application/json
 
 {
-    "conversationId":"644201a4769700cedf364908",
-    "sender":"641bcc4e9f0d515c5f304284",
-    "text":"en el baño"
+    "conversationId":"644709dd181bf2845a2f63c4",
+    "sender":"644705ba9ebd4916bd877c9a",
+    "text":"el proyecto"
 }
 ###
-GET http://localhost:3001/api/messages/644201a4769700cedf364908
+GET http://localhost:3001/api/messages/644709dd181bf2845a2f63c4
 
 
 

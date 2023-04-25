@@ -6,8 +6,18 @@ import ChatOnline from "../../components/chatOnline/ChatOnline";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
+import jwtDecode from "jwt-decode";
 import { io } from "socket.io-client";
 
+
+const secret = process.env.TOKEN_SECRET;
+
+let decoded = null;
+const token = sessionStorage.getItem('token');
+if (token) {
+  decoded = jwtDecode(token, secret);
+  console.log(decoded);
+}
 export default function Messenger() {
   const [conversations, setConversations] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
