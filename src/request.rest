@@ -91,12 +91,21 @@ POST http://localhost:3001/api/conversations
 Content-Type: application/json
 
 {
-    "senderId":"64477799181bf2845a2f6448",
-    "receiverId":"6445b1c1d42fc9cebeae9259"
+    "senderId":"6449d135de539b7e7051e34a",
+    "receiverId":"6449d07bde539b7e7051e33b"
 }
 
 ###
-GET http://localhost:3001/api/conversations/64477799181bf2845a2f6448
+POST http://localhost:3001/api/conversations/group
+Content-Type: application/json
+
+{
+  "members": ["6449d09ade539b7e7051e33e", "6449d0b5de539b7e7051e341", "6449d0dede539b7e7051e344", "6449d0f7de539b7e7051e347", "6449d135de539b7e7051e34a"],
+  "subgroup": "POI"
+}
+
+###
+GET http://localhost:3001/api/conversations/6445b1c1d42fc9cebeae9259
 
 //mensajes
 

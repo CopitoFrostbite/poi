@@ -39,3 +39,15 @@ body {
     font-size: 0.9rem;
     color: #999;
   }
+  .create-conversation-button {
+  background-color: #989fe0;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.create-conversation-button:hover {
+  background-color: #454683;
+  color: #ffffff;
+}

@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import jwtDecode from "jwt-decode";
 import axios from 'axios';
 import './chat.css';
+import MessageList from './messagelist.jsx';
 import ConversationList from './conversationlist.jsx';
+import CreateConversationForm from './conversationform';
+import MessageInput from './messageinput.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const secret = process.env.TOKEN_SECRET;
@@ -16,6 +19,7 @@ const Chat = ({ user, conversation }) => {
   const [messages, setMessages] = useState([]);
   const [decoded, setDecoded] = useState(null);
   const [otherUsernames, setOtherUsernames] = useState({});
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const socket = io('http://localhost:3001');
   const navigate = useNavigate();
 
@@ -23,7 +27,7 @@ const Chat = ({ user, conversation }) => {
     const token = sessionStorage.getItem('token');
     if (token) {
       const decodedToken = jwtDecode(token, secret);
-      console.log(decodedToken);
+     
       console.log(decodedToken._id);
       setDecoded(decodedToken);
     } else {
@@ -34,37 +38,28 @@ const Chat = ({ user, conversation }) => {
   useEffect(() => {
     if (decoded) {
       const fetchConversations = async () => {
-        console.log(decoded);
         try {
           const response = await axios.get(`http://localhost:3001/api/conversations/${decoded._id}`);
-          console.log(response);
-          setConversations(response.data);
-          
-          const otherIds = response.data.map(conversation => conversation.members.find(member => member !== decoded._id));
-          console.log(otherIds);
-          const promises = otherIds.map(id => axios.get(`http://localhost:3001/api/user/${id}`));
-          console.log(promises);
-          const responses = await Promise.all(promises);
-          const usernames = {};
-          responses.forEach(response => {
-            const username = response.data.username;
-            
-            const userId = response.data._id;
-            
-            usernames[userId] = username;
-          });
-          
-          setOtherUsernames(usernames);
-          console.log(otherUsernames);
+          const conversations = response.data;
+          setConversations(conversations);
+  
+          const userIds = conversations.reduce((acc, convo) => {
+            return [...acc, ...convo.members.filter(memberId => memberId !== decoded._id)];
+          }, []);
+          const userPromises = userIds.map(userId => axios.get(`http://localhost:3001/api/user/${userId}`));
+          const userResponses = await Promise.all(userPromises);
+          const users = userResponses.reduce((acc, response) => {
+            const { _id, username } = response.data;
+            return {...acc, [_id]: username };
+          }, {});
+          setOtherUsernames(users);
         } catch (error) {
           console.log(error);
         }
       };
+  
       fetchConversations();
       console.log("Fetching conversations");
-  
-      const username = decoded.username;
-      console.log("Username:", username);
     }
   
     socket.on('message', (newMessage) => {
@@ -81,6 +76,9 @@ const Chat = ({ user, conversation }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(  conversation._id);
+    console.log(  decoded._id);
+    console.log(  message);
     const newMessage = {
       conversationId: conversation._id,
       senderId: decoded._id,
@@ -110,52 +108,46 @@ const Chat = ({ user, conversation }) => {
   const handleInputChange = (event) => {
     setMessage(event.target.value);
   };
-
   
   const getUsernameForUserId = (userId) => {
     return otherUsernames[userId];
   };
   
+  const handleConversationSelect = (conversationId) => {
+    setSelectedConversation(conversationId);
+  };
 
   // Render the chat interface
   return (
     <div className="container">
       <h1>Chat</h1>
+      
       <div className="row">
+        
         <div className="col-sm-4">
-          <ConversationList
-            conversations={conversations}
-            selectedConversation={selectedConversation}
-            onConversationClick={handleConversationClick}
-            getUsernameForUserId={getUsernameForUserId}
-          />
-        </div>
+        <button className="create-conversation-button" onClick={() => setShowCreateForm(!showCreateForm)}>
+          {showCreateForm ? 'Cerrar' : 'Crear nueva conversación'}
+        </button>
+        {showCreateForm && <CreateConversationForm onSubmit={() => setShowCreateForm(false)} decoded={decoded} />}
+        <ConversationList
+          conversations={conversations}
+          selectedConversation={selectedConversation}
+          onConversationClick={handleConversationClick}
+          getUsernameForUserId={getUsernameForUserId}
+          decoded={decoded}
+          otherUsernames={otherUsernames}
+        />
+                
+        </div>        
         <div className="col-sm-8">
-          <div className="card mb-3">
-            <div className="card-body">
-              <ul className="list-unstyled">
-                {messages.map((message) => (
-                  <li key={message._id}>
-                    <strong>{message.senderId}: </strong>
-                    {message.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <textarea
-                className="form-control"
-                placeholder="Enter message"
-                value={message}
-                onChange={handleInputChange}
-              ></textarea>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Send
-            </button>
-          </form>
+        <MessageList messages={messages} decoded={decoded} getUsernameForUserId={getUsernameForUserId} />
+          <MessageInput
+           conversation={conversations.find(conversation => conversation._id === selectedConversation)}
+           decoded={decoded}
+           socket={socket}
+           onInputChange={() => { }}
+           onSubmit={() => setSelectedConversation(null)}
+          />
         </div>
       </div>
     </div>

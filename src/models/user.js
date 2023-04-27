@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
       unique: true,
     },
    nombre:{
-    type: String
+    type: String,
     
    },
    correo:{
@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
       required: true,
       min: 6,
     },
+    carrera: {
+      type: String,
+      required: true,
+      enum: ['LM', 'LF', 'LCC', 'Actuaria', 'LMAD', 'LSTI']
+    },
     profilePicture: {
       type: String,
       default: "",
@@ -29,19 +34,7 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: "",
     },
-    
-    desc: {
-      type: String,
-      max: 50,
-    },
-    city: {
-      type: String,
-      max: 50,
-    },
-    from: {
-      type: String,
-      max: 50,
-    },
+   
    
   },
   { timestamps: true }

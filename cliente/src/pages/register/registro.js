@@ -8,6 +8,7 @@ function Register() {
   const [correo, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [carrera, setCarrera] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [registerError, setRegisterError] = useState('');
@@ -29,6 +30,10 @@ function Register() {
     setConfirmPassword(event.target.value);
   };
 
+  const handleCarreraChange = (event) => {
+    setCarrera(event.target.value);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     
@@ -38,7 +43,7 @@ function Register() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ username, correo, password })
+      body: JSON.stringify({ username, correo, password,carrera })
     })
       .then(response => response.json())
       
@@ -52,6 +57,7 @@ function Register() {
           setUsername("");
           setEmail("");
           setPassword("");
+          setCarrera("");
           setSuccessMessage("Cuenta creada con éxito");
           setTimeout(() => {
             navigate('/');
@@ -65,6 +71,7 @@ function Register() {
             setEmail('');
             setPassword('');
             setConfirmPassword('');
+            setCarrera("");
           
         }
       })
@@ -74,7 +81,8 @@ function Register() {
         setRegisterError("");
         setUsername("");
         setEmail("");
-        setPassword("");  
+        setPassword("");
+        setCarrera("");  
         setRegisterError('Hubo un error al registrar el usuario. Por favor, inténtelo de nuevo más tarde.');
       });
   };
@@ -102,6 +110,19 @@ function Register() {
         <div className="form-group">
           <label htmlFor="inputConfirmPassword">Confirmar contraseña:</label>
           <input type="password" className="form-control" id="inputConfirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
+        </div>
+        <div className="form-group">
+        <label htmlFor="carrera">Carrera</label>
+        <select name="carrera" id="carrera" value={carrera} onChange={handleCarreraChange} required>
+
+          <option value="">Selecciona una opción</option>
+          <option value="LM">Licenciatura en Matemáticas</option>
+          <option value="LF">Licenciatura en Física</option>
+          <option value="LCC">Licenciatura en Ciencias Computaciónales</option>
+          <option value="Actuaria">Actuaría</option>
+          <option value="LMAD">Licenciatura en Multimedia y Animacion Digital</option>
+          <option value="LSTI">Licenciatura en Seguridad en Tecnologías de Información</option>
+        </select>
         </div>
         {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
         {registerError && <div className="alert alert-danger">{registerError}</div>}
