@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const User = require('./models/user');
+const Message = require('./models/Message');
+const Conversation = require('./models/Conversation');
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
@@ -33,15 +35,19 @@ const port = process.env.PORT || 3001;
 app.set("port", port);
 
 // Middleware
-app.use(function(req, res, next) {
+/* app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
-});
-app.use(cors());
+}); */
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
-app.use(morgan('start'));
+//app.use(morgan('start'));
 app.use(helmet());
 
 // Rutas
@@ -54,8 +60,8 @@ app.use(express.static(path.join(__dirname, "front/login")));
 
 // Usuarios conectados
 let users = [];
-
-const addUser = async (userId, socketId) => {
+const connectedUsers = new Map(); 
+/* const addUser = async (userId, socketId) => {
   const user = await User.findById(userId);
   if (user) {
     const existingUser = users.find(u => u.userId === userId);
@@ -71,36 +77,50 @@ const removeUser = (socketId) => {
 
 const getUser = (userId) => {
   return users.find((user) => user.userId === userId);
-};
+}; */
 
 // Conexión de Socket.io
 io.on("connection", socket => {
-  console.log(socket.id);
-  console.log('usuario conectado');
-
-  // Agregar usuario
-  socket.on('addUser', (userId) => {
-    addUser(userId, socket.id);
-    io.emit('getUsers', users);
+  
+  
+  // Evento para manejar la desconexión de un cliente
+  socket.on('disconnect', () => {
+    console.log('Cliente desconectado');
+    // Eliminar al usuario de la lista de usuarios conectados
+    const userId = connectedUsers.get(socket.id);
+    if (userId) {
+      connectedUsers.delete(socket.id);
+      io.emit('userDisconnected', userId);
+    }
   });
 
+  // Evento para agregar un usuario a la lista de usuarios conectados
+  socket.on('addUser', (userId) => {
+    console.log('Usuario conectado:', userId);
+    console.log(userId);
+    // Agregar al usuario a la lista de usuarios conectados
+    connectedUsers.set(socket.id, userId);
+    io.emit('userConnected', userId);
+  });
+
+
   // Enviar y recibir mensajes
-  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    const user = getUser(receiverId);
+  socket.on("sendMessage", ({ sender, conversationId, text }) => {
+    const user = getUser(conversationId);
     io.to(user.socketId).emit("getMessage", {
-      senderId,
+      sender,
       text,
     });
 
     io.emit("updateChat", {
-      senderId,
-      receiverId,
+      sender,
+      conversationId,
       text,
     });
   });
 
   // Desconexión del usuario
-  socket.on('disconnect', () => {
+  /* socket.on('disconnect', () => {
     removeUser(socket.id);
     io.emit('getUsers', users);
   });
@@ -135,7 +155,7 @@ io.on("connection", socket => {
     socket.on('disconnect', () => {
       socket.broadcast.emit('user-disconnected', userId)
     })
-  });
+  }); */
 });
 
 // Conexión a la base de datos

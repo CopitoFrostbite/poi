@@ -1,12 +1,24 @@
 .chat-card {
-    background-color: #f2f6f9;
+  background-color: rgba(242, 246, 249, 0.6);
     border: 1px solid #d2d2d2;
     border-radius: 10px;
     margin-bottom: 20px;
   }
   
   .chat-card-body {
-    padding: 10px;
+    display: flex;
+  flex-direction: column;
+  padding: 10px;
+  }
+
+  .message-input-container {
+    display: flex;
+    justify-content: flex-start; /* O flex-end para alinear a la derecha */
+    margin-top: 10px;
+  }
+  
+  .message-input-container.right {
+    justify-content: flex-end;
   }
   
   .chat-message {
@@ -29,6 +41,7 @@
     margin: 0 0 10px auto;
     max-width: 60%;
     text-align: right;
+    display: inline-block;
     animation: slideInRight 0.3s ease-in-out;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
   }
@@ -41,6 +54,7 @@
     margin: 0 auto 10px 0;
     max-width: 60%;
     text-align: left;
+    display: inline-block;
     animation: slideInLeft 0.3s ease-in-out;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   }

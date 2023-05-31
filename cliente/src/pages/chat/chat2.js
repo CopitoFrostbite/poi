@@ -14,6 +14,7 @@ const secret = process.env.TOKEN_SECRET;
 
 const Chat = ({ user, conversation }) => {
   const [conversations, setConversations] = useState([]);
+  const [connectedUsers, setConnectedUsers] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -24,18 +25,36 @@ const Chat = ({ user, conversation }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const token = sessionStorage.getItem('token');
     if (token) {
-      const decodedToken = jwtDecode(token, secret);
-     
-      console.log(decodedToken._id);
-      setDecoded(decodedToken);
-      // Emitir el evento "addUser" con el ID del usuario actual
-      socket.emit('addUser', decodedToken._id);
-    } else {
-      navigate('/');
-    }
-  }, [navigate]);
+    const decodedToken = jwtDecode(token, secret);    
+    setDecoded(decodedToken);
+    socket.emit('addUser', decodedToken._id);
+    
+  } else {
+    navigate('/');
+  }
+
+  
+  socket.on('userConnected', (userId) => {
+    console.log('Usuario conectado:', userId);
+    // Actualizar la lista de usuarios conectados
+    setConnectedUsers((prevUsers) => [...prevUsers, userId]);
+  });
+
+  socket.on('userDisconnected', (userId) => {
+    console.log('Usuario desconectado:', userId);
+    // Actualizar la lista de usuarios conectados
+    setConnectedUsers((prevUsers) => prevUsers.filter((user) => user !== userId));
+  });
+
+  return () => {
+    // Limpiar los listeners del socket al desmontar el componente
+    socket.off('userConnected');
+    socket.off('userDisconnected');
+  };
+}, [navigate]);
 
   useEffect(() => {
     if (decoded) {
@@ -63,17 +82,18 @@ const Chat = ({ user, conversation }) => {
       fetchConversations();
       console.log("Fetching conversations");
     }
-  
-    
-    
-    socket.on('getMessage', (newMessage) => {
+
+    socket.on('newMessage', (newMessage) => {
       if (newMessage.conversationId === selectedConversation) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     });
 
     socket.on('updateChat', (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => {
+        const filteredMessages = prevMessages.filter((message) => message._id !== newMessage._id);
+        return [newMessage, ...filteredMessages];
+      });
     });
   
     return () => {
@@ -83,9 +103,9 @@ const Chat = ({ user, conversation }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(  conversation._id);
-    console.log(  decoded._id);
-    console.log(  message);
+    console.log(conversation._id);
+    console.log(decoded._id);
+    console.log(message);
     const newMessage = {
       conversationId: conversation._id,
       senderId: decoded._id,
@@ -95,7 +115,6 @@ const Chat = ({ user, conversation }) => {
       const response = await axios.post('http://localhost:3001/api/messages', newMessage);
       setMessages([...messages, response.data]);
       setMessage('');
-      // Emitir el evento "sendMessage" con los datos del mensaje
       socket.emit('sendMessage', {
         senderId: decoded._id,
         receiverId: conversation._id,
@@ -129,44 +148,43 @@ const Chat = ({ user, conversation }) => {
     setSelectedConversation(conversationId);
   };
 
-  // Render the chat interface
+  
+
   return (
     <div className="container">
       <h1>Chat</h1>
-      
       <div className="row">
-        
         <div className="col-sm-4">
-        <button className="create-conversation-button" onClick={() => setShowCreateForm(!showCreateForm)}>
-          {showCreateForm ? 'Cerrar' : 'Crear nueva conversación'}
-        </button>
-        {showCreateForm && <CreateConversationForm onSubmit={() => setShowCreateForm(false)} decoded={decoded} />}
-        <ConversationList
-          conversations={conversations}
-          selectedConversation={selectedConversation}
-          onConversationClick={handleConversationClick}
-          getUsernameForUserId={getUsernameForUserId}
-          decoded={decoded}
-          otherUsernames={otherUsernames}
-        />
-                
-        </div>        
-        <div className="col-sm-8">
-        <MessageList messages={messages} decoded={decoded} getUsernameForUserId={getUsernameForUserId} />
-        <MessageInput
-          conversation={conversations.find(conversation => conversation._id === selectedConversation)}
-          decoded={decoded}
-          socket={socket}
-          onInputChange={() => {}}
-          onSubmit={handleSubmit} // Pasar la función handleSubmit que maneja el envío del mensaje
-        />
+          <button className="create-conversation-button" onClick={() => setShowCreateForm(!showCreateForm)}>
+            {showCreateForm ? 'Cerrar' : 'Crear nueva conversación'}
+          </button>
+          {showCreateForm && <CreateConversationForm onSubmit={() => setShowCreateForm(false)} decoded={decoded} />}
+          <ConversationList
+            conversations={conversations}
+            selectedConversation={selectedConversation}
+            onConversationClick={handleConversationClick}
+            getUsernameForUserId={getUsernameForUserId}
+            decoded={decoded}
+            otherUsernames={otherUsernames}
+          />
         </div>
+        <div className="col-sm-8">
+          <div className="message-container">
+            <MessageList messages={messages} decoded={decoded} getUsernameForUserId={getUsernameForUserId} />
+            <MessageInput
+              conversation={conversations.find(conversation => conversation._id === selectedConversation)}
+              decoded={decoded}
+              socket={socket}
+              onInputChange={() => { }}
+              onSubmit={(event) => handleSubmit(event)}
+            />
+          </div>
+        </div>
+        
       </div>
     </div>
-    
-      
   );
-  
 };
 
 export default Chat;
+

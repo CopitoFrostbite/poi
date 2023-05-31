@@ -117,7 +117,7 @@ Content-Type: application/json
 {
     "conversationId":"6476b5dd77139b880892e003",
     "sender":"6449d135de539b7e7051e34a",    
-    "text":"a ea"
+    "text":"ae ea"
 }
 ###
 GET http://localhost:3001/api/messages/6476b5dd77139b880892e003

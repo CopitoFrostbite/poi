@@ -6,23 +6,24 @@ module.exports = (io) => {
   // Guardar un nuevo mensaje
   router.post("/", async (req, res) => {
     const newMessage = new Message(req.body);
-
+  
     try {
       const savedMessage = await newMessage.save();
-
+  
       // Agrega el ID del mensaje a la conversación correspondiente
-      const conversation = await Conversation.findById(req.body.conversation._id);
+      const conversation = await Conversation.findById(req.body.conversationId);
       conversation.messages.push(savedMessage._id);
       await conversation.save();
-
+  
       // Emite un evento para notificar sobre un nuevo mensaje
       io.emit("newMessage", savedMessage);
-
+  
       res.status(200).json(savedMessage);
     } catch (err) {
       res.status(500).json(err);
     }
   });
+  
 
   // Obtener los mensajes de una conversación
   router.get("/:conversationId", async (req, res) => {
