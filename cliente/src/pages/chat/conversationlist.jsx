@@ -3,13 +3,13 @@ import moment from 'moment';
 import './conversationlist.css';
 
 const ConversationList = ({ conversations, selectedConversation, onConversationClick, getUsernameForUserId, decoded }) => {
- 
+
   const groupConversations = conversations.filter(conversation => conversation.group === true);
   const oneOnOneConversations = conversations.filter(conversation => conversation.group === false);
-  
+
   return (
     <div className="conversation-list">
-      
+
       {groupConversations.length > 0 &&
         <div>
           <h3 className="conversation-list-heading">Conversaciones Grupales</h3>
@@ -45,7 +45,7 @@ const ConversationList = ({ conversations, selectedConversation, onConversationC
         </div>
       }
 
-      
+
       {oneOnOneConversations.length > 0 &&
         <div>
           <h3 className="conversation-list-heading">Conversaciones Uno a Uno</h3>
@@ -86,3 +86,4 @@ const ConversationList = ({ conversations, selectedConversation, onConversationC
 };
 
 export default ConversationList;
+

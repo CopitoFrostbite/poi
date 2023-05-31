@@ -30,6 +30,8 @@ const Chat = ({ user, conversation }) => {
      
       console.log(decodedToken._id);
       setDecoded(decodedToken);
+      // Emitir el evento "addUser" con el ID del usuario actual
+      socket.emit('addUser', decodedToken._id);
     } else {
       navigate('/');
     }
@@ -62,11 +64,16 @@ const Chat = ({ user, conversation }) => {
       console.log("Fetching conversations");
     }
   
-    socket.on('message', (newMessage) => {
+    
+    
+    socket.on('getMessage', (newMessage) => {
       if (newMessage.conversationId === selectedConversation) {
-        setMessages([...messages, newMessage]);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
-      console.log("New message received from socket:", newMessage);
+    });
+
+    socket.on('updateChat', (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
   
     return () => {
@@ -88,7 +95,12 @@ const Chat = ({ user, conversation }) => {
       const response = await axios.post('http://localhost:3001/api/messages', newMessage);
       setMessages([...messages, response.data]);
       setMessage('');
-      socket.emit('message', response.data);
+      // Emitir el evento "sendMessage" con los datos del mensaje
+      socket.emit('sendMessage', {
+        senderId: decoded._id,
+        receiverId: conversation._id,
+        text: message
+      });
       console.log("Message sent through socket:", response.data);
     } catch (error) {
       console.log(error);
@@ -141,17 +153,20 @@ const Chat = ({ user, conversation }) => {
         </div>        
         <div className="col-sm-8">
         <MessageList messages={messages} decoded={decoded} getUsernameForUserId={getUsernameForUserId} />
-          <MessageInput
-           conversation={conversations.find(conversation => conversation._id === selectedConversation)}
-           decoded={decoded}
-           socket={socket}
-           onInputChange={() => { }}
-           onSubmit={() => setSelectedConversation(null)}
-          />
+        <MessageInput
+          conversation={conversations.find(conversation => conversation._id === selectedConversation)}
+          decoded={decoded}
+          socket={socket}
+          onInputChange={() => {}}
+          onSubmit={handleSubmit} // Pasar la función handleSubmit que maneja el envío del mensaje
+        />
         </div>
       </div>
     </div>
+    
+      
   );
+  
 };
 
 export default Chat;

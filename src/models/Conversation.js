@@ -7,23 +7,27 @@ const conversationSchema = new mongoose.Schema(
       required: true,
       validate: {
         validator: function(arr) {
-          return arr.length >= 2; // Verifica que haya al menos dos miembros en la conversación
+          return arr.length >= 2;
         },
         message: "Debe haber al menos dos miembros en la conversación",
       },
     },
-    group:{
+    group: {
       type: Boolean,
       required: true,
     },
-    subgroup:{
+    subgroup: {
       type: String,
       validate: {
         validator: function(str) {
-          return this.group ? str.length > 0 : true; // Verifica que haya un subgrupo solo si la conversación es grupal
+          return this.group ? str.length > 0 : true;
         },
         message: "El campo de subgrupo es obligatorio si la conversación es un subgrupo",
       },
+    },
+    messages: {
+      type: [String], // Almacena los IDs de los mensajes relacionados
+      default: [],
     },
   },
   { timestamps: true }

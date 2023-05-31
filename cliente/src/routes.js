@@ -9,9 +9,9 @@ function Ruta() {
   return (
     <Router>
       <Routes>
-        <Route exact path="/chat" element={<Chat />} /> {/* Ruta para el inicio de sesión */}
-        <Route exact path="/" element={<Login />} /> {/* Usa el componente Chat en la ruta raíz */}
-        <Route exact path="/register" element={<Registro />} />
+      <Route path="/" element={<Login />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/register" element={<Registro />} />
       </Routes>
     </Router>
   );

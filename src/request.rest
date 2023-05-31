@@ -105,7 +105,8 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3001/api/conversations/6445b1c1d42fc9cebeae9259
+GET http://localhost:3001/api/conversations/6449d09ade539b7e7051e33e
+
 
 //mensajes
 
@@ -114,12 +115,12 @@ POST http://localhost:3001/api/messages
 Content-Type: application/json
 
 {
-    "conversationId":"644709dd181bf2845a2f63c4",
-    "sender":"644705ba9ebd4916bd877c9a",
-    "text":"el proyecto"
+    "conversationId":"6476b5dd77139b880892e003",
+    "sender":"6449d135de539b7e7051e34a",    
+    "text":"a ea"
 }
 ###
-GET http://localhost:3001/api/messages/644709dd181bf2845a2f63c4
+GET http://localhost:3001/api/messages/6476b5dd77139b880892e003
 
 
 

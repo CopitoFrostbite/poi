@@ -1,30 +1,43 @@
 const router = require("express").Router();
 const Message = require("../models/Message");
+const Conversation = require("../models/Conversation");
 
-//add
+module.exports = (io) => {
+  // Guardar un nuevo mensaje
+  router.post("/", async (req, res) => {
+    const newMessage = new Message(req.body);
 
-router.post("/", async (req, res) => {
-  const newMessage = new Message(req.body);
+    try {
+      const savedMessage = await newMessage.save();
 
-  try {
-    const savedMessage = await newMessage.save();
-    res.status(200).json(savedMessage);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+      // Agrega el ID del mensaje a la conversación correspondiente
+      const conversation = await Conversation.findById(req.body.conversation._id);
+      conversation.messages.push(savedMessage._id);
+      await conversation.save();
 
-//get
+      // Emite un evento para notificar sobre un nuevo mensaje
+      io.emit("newMessage", savedMessage);
 
-router.get("/:conversationId", async (req, res) => {
-  try {
-    const messages = await Message.find({
-      conversationId: req.params.conversationId,
-    });
-    res.status(200).json(messages);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+      res.status(200).json(savedMessage);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
 
-module.exports = router;
+  // Obtener los mensajes de una conversación
+  router.get("/:conversationId", async (req, res) => {
+    try {
+      const messages = await Message.find({
+        conversationId: req.params.conversationId,
+      });
+      res.status(200).json(messages);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
+  return router;
+};
+
+
+
