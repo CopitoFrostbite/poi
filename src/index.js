@@ -19,7 +19,7 @@ const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PUT", "DELETE"]
   }
 });
 
@@ -29,6 +29,7 @@ const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
 const messagesRoutes = require("./routes/messages")(io);
 const conversationsRoutes = require("./routes/conversations")(io);
+const uploadRoutes = require("./routes/upload");
 
 // Configuración del puerto
 const port = process.env.PORT || 3001;
@@ -56,29 +57,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/conversations", conversationsRoutes);
 app.use("/api/messages", messagesRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use('/uploads', express.static('uploads'));
 app.use(express.static(path.join(__dirname, "front/login")));
 
 // Usuarios conectados
 let users = [];
 const connectedUsers = new Map(); 
-/* const addUser = async (userId, socketId) => {
-  const user = await User.findById(userId);
-  if (user) {
-    const existingUser = users.find(u => u.userId === userId);
-    if (!existingUser) {
-      users.push({ userId, socketId });
-    }
-  }
-};
-
-const removeUser = (socketId) => {
-  users = users.filter(user => user.socketId !== socketId);
-};
-
-const getUser = (userId) => {
-  return users.find((user) => user.userId === userId);
-}; */
-
 // Conexión de Socket.io
 io.on("connection", socket => {
   
@@ -94,29 +79,51 @@ io.on("connection", socket => {
     }
   });
 
+  socket.on('shareLocation', (location) => {
+    // Transmitir la ubicación a otros usuarios conectados
+    socket.broadcast.emit('newLocation', location);
+  });
+
   // Evento para agregar un usuario a la lista de usuarios conectados
   socket.on('addUser', (userId) => {
-    console.log('Usuario conectado:', userId);
-    console.log(userId);
-    // Agregar al usuario a la lista de usuarios conectados
-    connectedUsers.set(socket.id, userId);
-    io.emit('userConnected', userId);
+  console.log('Usuario conectado:', userId);
+  // Agregar al usuario a la lista de usuarios conectados
+  connectedUsers.set(socket.id, userId);
+  io.emit('userConnected', userId);
   });
 
 
-  // Enviar y recibir mensajes
-  socket.on("sendMessage", ({ sender, conversationId, text }) => {
-    const user = getUser(conversationId);
-    io.to(user.socketId).emit("getMessage", {
-      sender,
-      text,
-    });
 
-    io.emit("updateChat", {
-      sender,
+  socket.on("sendMessage", async ({ sender, conversationId, text, encrypted, media }) => {
+    const message = new Message({
       conversationId,
+      sender,
       text,
+      encrypted,
+      media, 
     });
+  
+    try {
+      const savedMessage = await message.save();
+  
+      const user = getUser(conversationId);
+      io.to(user.socketId).emit("getMessage", {
+        sender,
+        text: savedMessage.text,
+        encrypted: savedMessage.encrypted,
+        media: savedMessage.media, 
+      });
+  
+      io.emit("updateChat", {
+        sender,
+        conversationId,
+        text: savedMessage.text,
+        encrypted: savedMessage.encrypted,
+        media: savedMessage.media, 
+      });
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   // Desconexión del usuario

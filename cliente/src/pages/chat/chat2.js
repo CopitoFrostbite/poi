@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+
 import jwtDecode from "jwt-decode";
 import axios from 'axios';
 import './chat.css';
@@ -25,36 +26,33 @@ const Chat = ({ user, conversation }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     const token = sessionStorage.getItem('token');
     if (token) {
-    const decodedToken = jwtDecode(token, secret);    
-    setDecoded(decodedToken);
-    socket.emit('addUser', decodedToken._id);
-    
-  } else {
-    navigate('/');
-  }
+      const decodedToken = jwtDecode(token, secret);    
+      setDecoded(decodedToken);
+      socket.emit('addUser', decodedToken._id);
+    } else {
+      navigate('/');
+    }
 
-  
-  socket.on('userConnected', (userId) => {
-    console.log('Usuario conectado:', userId);
-    // Actualizar la lista de usuarios conectados
-    setConnectedUsers((prevUsers) => [...prevUsers, userId]);
-  });
+    socket.on('userConnected', (userId) => {
+      console.log('Usuario conectado:', userId);
+      // Actualizar la lista de usuarios conectados
+      setConnectedUsers((prevUsers) => [...prevUsers, userId]);
+    });
 
-  socket.on('userDisconnected', (userId) => {
-    console.log('Usuario desconectado:', userId);
-    // Actualizar la lista de usuarios conectados
-    setConnectedUsers((prevUsers) => prevUsers.filter((user) => user !== userId));
-  });
+    socket.on('userDisconnected', (userId) => {
+      console.log('Usuario desconectado:', userId);
+      // Actualizar la lista de usuarios conectados
+      setConnectedUsers((prevUsers) => prevUsers.filter((user) => user !== userId));
+    });
 
-  return () => {
-    // Limpiar los listeners del socket al desmontar el componente
-    socket.off('userConnected');
-    socket.off('userDisconnected');
-  };
-}, [navigate]);
+    return () => {
+      // Limpiar los listeners del socket al desmontar el componente
+      socket.off('userConnected');
+      socket.off('userDisconnected');
+    };
+  }, [navigate]);
 
   useEffect(() => {
     if (decoded) {
@@ -63,7 +61,7 @@ const Chat = ({ user, conversation }) => {
           const response = await axios.get(`http://localhost:3001/api/conversations/${decoded._id}`);
           const conversations = response.data;
           setConversations(conversations);
-  
+          
           const userIds = conversations.reduce((acc, convo) => {
             return [...acc, ...convo.members.filter(memberId => memberId !== decoded._id)];
           }, []);
@@ -90,41 +88,13 @@ const Chat = ({ user, conversation }) => {
     });
 
     socket.on('updateChat', (newMessage) => {
-      setMessages((prevMessages) => {
-        const filteredMessages = prevMessages.filter((message) => message._id !== newMessage._id);
-        return [newMessage, ...filteredMessages];
-      });
+      setMessages((prevMessages) => [newMessage, ...prevMessages.filter((message) => message._id !== newMessage._id)]);
     });
   
     return () => {
       socket.disconnect();
     };
   }, [decoded, selectedConversation]);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    console.log(conversation._id);
-    console.log(decoded._id);
-    console.log(message);
-    const newMessage = {
-      conversationId: conversation._id,
-      senderId: decoded._id,
-      text: message
-    };
-    try {
-      const response = await axios.post('http://localhost:3001/api/messages', newMessage);
-      setMessages([...messages, response.data]);
-      setMessage('');
-      socket.emit('sendMessage', {
-        senderId: decoded._id,
-        receiverId: conversation._id,
-        text: message
-      });
-      console.log("Message sent through socket:", response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleConversationClick = async (conversationId) => {
     try {
@@ -136,18 +106,11 @@ const Chat = ({ user, conversation }) => {
     }
   };
 
-  const handleInputChange = (event) => {
-    setMessage(event.target.value);
-  };
-  
   const getUsernameForUserId = (userId) => {
     return otherUsernames[userId];
   };
-  
-  const handleConversationSelect = (conversationId) => {
-    setSelectedConversation(conversationId);
-  };
 
+  
   
 
   return (
@@ -175,12 +138,9 @@ const Chat = ({ user, conversation }) => {
               conversation={conversations.find(conversation => conversation._id === selectedConversation)}
               decoded={decoded}
               socket={socket}
-              onInputChange={() => { }}
-              onSubmit={(event) => handleSubmit(event)}
             />
           </div>
         </div>
-        
       </div>
     </div>
   );
